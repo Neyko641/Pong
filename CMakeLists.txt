@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.23)
+project(Pong)
+set(CMAKE_CXX_STANDARD 14)
+find_package(SDL2 REQUIRED SDL2)
+add_executable(Pong main.cpp)
+target_link_libraries(Pong PRIVATE SDL2)
