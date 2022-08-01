@@ -3,11 +3,18 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
-
-typedef struct {
+struct app_win {
     SDL_Renderer *renderer;
     SDL_Window *win;
-} app_win;
+};
+struct {
+    int width;
+    int height;
+} resolutions[] = {
+                {640, 480},
+                {800, 600},
+                {1280, 720}
+};
 
 void init_sdl_win (int screen_width, int screen_height) {
     app_win app;
@@ -33,8 +40,6 @@ void init_sdl_win (int screen_width, int screen_height) {
 }
 
 int main() {
-    const int res_w[] = {640, 800,1280};
-    const int res_h[] = {480,600,720};
     const SDL_MessageBoxButtonData buttons[] = {
             { /* .flags, .buttonid, .text */        0, 0, "640x480" },
             { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "800x600" },
@@ -56,7 +61,7 @@ int main() {
     };
     const SDL_MessageBoxData messageboxdata = {
             SDL_MESSAGEBOX_INFORMATION, /* .flags */
-            NULL, /* window */
+            nullptr, /* window */
             "Set screen resolution", /*  title of menu box */
             "Pick a Resolution of your choice :", /* Display message */
             SDL_arraysize(buttons), /* Number of Buttons */
@@ -64,17 +69,16 @@ int main() {
             &colorScheme /* .colorScheme */
     };
     int button_id;
+   /*
     if (SDL_ShowMessageBox(&messageboxdata, &button_id) < 0) {
         SDL_Log("error displaying message box");
         return 1;
     }
-    /*
-    if (buttonid == -1) {
+    if (button_id == -1) {
         SDL_Log("no resolution was picked");
     }
-    printf("resolution is %d x %d", res_w[button_id], res_h[button_id]);
-     */
-    init_sdl_win(res_w[button_id], res_h[button_id]);
-
+    printf("resolution is %d x %d", resolutions[button_id].width, resolutions[button_id].height);
+*/
+    init_sdl_win(resolutions[button_id].width, resolutions[button_id].height);
     return 0;
 }
