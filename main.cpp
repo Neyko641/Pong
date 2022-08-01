@@ -9,9 +9,7 @@ typedef struct {
     SDL_Window *win;
 } app_win;
 
-void init_sdl (void) {
-    const int SCREEN_WIDTH = 1280;
-    const int SCREEN_HEIGHT = 720;
+void init_sdl_win (int screen_width, int screen_height) {
     app_win app;
     int render_flags, win_flags;
     render_flags = SDL_RENDERER_ACCELERATED;
@@ -20,9 +18,9 @@ void init_sdl (void) {
         printf("Couldn't init SDL", SDL_GetError());
         exit(1);
     }
-    app.win = SDL_CreateWindow("Pong",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, win_flags);
+    app.win = SDL_CreateWindow("Pong",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, win_flags);
     if(!app.win) {
-        printf("Failed to open %d x %d window: %s\n", SCREEN_WIDTH, SCREEN_HEIGHT, SDL_GetError());
+        printf("Failed to open %d x %d window: %s\n", screen_width, screen_height, SDL_GetError());
         exit(1);
     }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
@@ -35,5 +33,48 @@ void init_sdl (void) {
 }
 
 int main() {
+    const int res_w[] = {640, 800,1280};
+    const int res_h[] = {480,600,720};
+    const SDL_MessageBoxButtonData buttons[] = {
+            { /* .flags, .buttonid, .text */        0, 0, "640x480" },
+            { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "800x600" },
+            { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "1280x720" },
+    };
+    const SDL_MessageBoxColorScheme colorScheme = {
+            { /* .colors (.r, .g, .b) */
+                    /* [SDL_MESSAGEBOX_COLOR_BACKGROUND] */
+                    { 255,   0,   0 },
+                    /* [SDL_MESSAGEBOX_COLOR_TEXT] */
+                    {   0, 255,   0 },
+                    /* [SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] */
+                    { 255, 255,   0 },
+                    /* [SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] */
+                    {   0,   0, 255 },
+                    /* [SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] */
+                    { 255,   0, 255 }
+            }
+    };
+    const SDL_MessageBoxData messageboxdata = {
+            SDL_MESSAGEBOX_INFORMATION, /* .flags */
+            NULL, /* window */
+            "Set screen resolution", /*  title of menu box */
+            "Pick a Resolution of your choice :", /* Display message */
+            SDL_arraysize(buttons), /* Number of Buttons */
+            buttons, /* .buttons */
+            &colorScheme /* .colorScheme */
+    };
+    int button_id;
+    if (SDL_ShowMessageBox(&messageboxdata, &button_id) < 0) {
+        SDL_Log("error displaying message box");
+        return 1;
+    }
+    /*
+    if (buttonid == -1) {
+        SDL_Log("no resolution was picked");
+    }
+    printf("resolution is %d x %d", res_w[button_id], res_h[button_id]);
+     */
+    init_sdl_win(res_w[button_id], res_h[button_id]);
 
+    return 0;
 }

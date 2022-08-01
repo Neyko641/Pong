@@ -52,6 +52,7 @@ build cmake_object_order_depends_target_Pong: phony || CMakeFiles/Pong.dir
 build CMakeFiles/Pong.dir/main.cpp.o: CXX_COMPILER__Pong_Debug /mnt/hdd/Projects/Cpp-Projects/Pong/main.cpp || cmake_object_order_depends_target_Pong
   DEP_FILE = CMakeFiles/Pong.dir/main.cpp.o.d
   FLAGS = -g -std=gnu++14
+  INCLUDES = -I/usr/include/SDL2
   OBJECT_DIR = CMakeFiles/Pong.dir
   OBJECT_FILE_DIR = CMakeFiles/Pong.dir
 
@@ -63,9 +64,9 @@ build CMakeFiles/Pong.dir/main.cpp.o: CXX_COMPILER__Pong_Debug /mnt/hdd/Projects
 #############################################
 # Link the executable Pong
 
-build Pong: CXX_EXECUTABLE_LINKER__Pong_Debug CMakeFiles/Pong.dir/main.cpp.o
+build Pong: CXX_EXECUTABLE_LINKER__Pong_Debug CMakeFiles/Pong.dir/main.cpp.o | /usr/lib/libSDL2main.a /usr/lib/libSDL2-2.0.so.0.22.0
   FLAGS = -g
-  LINK_LIBRARIES = -lSDL2
+  LINK_LIBRARIES = /usr/lib/libSDL2main.a  /usr/lib/libSDL2-2.0.so.0.22.0
   OBJECT_DIR = CMakeFiles/Pong.dir
   POST_BUILD = :
   PRE_LINK = :
