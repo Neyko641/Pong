@@ -42,22 +42,25 @@ bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, in
     return true;
 }
 
-void handle_input(window close_request) {
+void handle_input(bool state, SDL_Window *win) {
     SDL_Event event;
-    while(!close_request) {
-        while (SDL_PollEvent(&event)) {
-            switch (event.type) {
-                case SDL_QUIT :
-                    printf("Game will end");
-                    break;
-            }
-        }
+    while (SDL_PollEvent(&event) != 0) {
+     /*   switch (event.type) {
+            case SDL_QUIT : state = false;
+                break;
+        }*/
+     if(event.type == SDL_QUIT) {
+         printf("User trying to quit");
+         state = false;
+     }
+        SDL_UpdateWindowSurface(win);
     }
 }
 
+
 int main() {
     const SDL_MessageBoxButtonData buttons[] = {
-            { /* .flags, .buttonid, .text */        0, 0, "640x480" },
+            { /* .flags, .button id, .text */        0, 0, "640x480" },
             { SDL_MESSAGEBOX_BUTTON_RETURNKEY_DEFAULT, 1, "800x600" },
             { SDL_MESSAGEBOX_BUTTON_ESCAPEKEY_DEFAULT, 2, "1280x720" },
     };
@@ -75,7 +78,7 @@ int main() {
                     { 255,   0, 255 }
             }
     };
-    const SDL_MessageBoxData messageboxdata = {
+    const SDL_MessageBoxData message_box_data = {
             SDL_MESSAGEBOX_INFORMATION, /* .flags */
             nullptr, /* window */
             "Set screen resolution", /*  title of menu box */
@@ -86,11 +89,10 @@ int main() {
     };
     int button_id;
 
-    if (SDL_ShowMessageBox(&messageboxdata, &button_id) < 0) {
+    if (SDL_ShowMessageBox(&message_box_data, &button_id) < 0) {
         SDL_Log("error displaying message box");
-        return false;
     }
-     else
+    else
     {
         printf("resolution is %d x %d", resolutions[button_id].width, resolutions[button_id].height);
     }
@@ -103,9 +105,15 @@ int main() {
     application.current_height = resolutions[button_id].height;
     bool is_running =  init_sdl_win(application.renderer, application.win, application.current_width, application.current_height);
     while(is_running) {
+        //for some reason the handle input function doesn't want to poll the events.
+        //handle_input(is_running, application.win);
         SDL_SetRenderDrawColor(application.renderer, 255,0,0,255);
         SDL_RenderPresent(application.renderer);
+        SDL_Delay(1000/application.FPS);
     }
+    SDL_DestroyRenderer(application.renderer);
+    SDL_DestroyWindow(application.win);
+    SDL_Quit();
     
     printf("\nExecution ended");
     return 0;
