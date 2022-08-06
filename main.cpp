@@ -5,8 +5,8 @@
 #include <stdio.h>
 struct window {
     int FPS;
-    int current_width;
-    int current_height;
+    int width;
+    int height;
     SDL_Renderer *renderer;
     SDL_Window *win;
 };
@@ -42,18 +42,14 @@ bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, in
     return true;
 }
 
-void handle_input(bool state, SDL_Window *win) {
+void handle_input(bool *state) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
-     /*   switch (event.type) {
-            case SDL_QUIT : state = false;
+        switch (event.type) {
+            case SDL_QUIT : *state = false;
                 break;
-        }*/
-     if(event.type == SDL_QUIT) {
-         printf("User trying to quit");
-         state = false;
-     }
-        SDL_UpdateWindowSurface(win);
+        }
+
     }
 }
 
@@ -101,12 +97,12 @@ int main() {
     }
 
     window application;
-    application.current_width = resolutions[button_id].width;
-    application.current_height = resolutions[button_id].height;
-    bool is_running =  init_sdl_win(application.renderer, application.win, application.current_width, application.current_height);
+    application.width = resolutions[button_id].width;
+    application.height = resolutions[button_id].height;
+    bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height);
     while(is_running) {
         //for some reason the handle input function doesn't want to poll the events.
-        //handle_input(is_running, application.win);
+        handle_input(&is_running);
         SDL_SetRenderDrawColor(application.renderer, 255,0,0,255);
         SDL_RenderPresent(application.renderer);
         SDL_Delay(1000/application.FPS);
