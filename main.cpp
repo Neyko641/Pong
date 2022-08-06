@@ -3,9 +3,7 @@
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
-struct app_win {
-    bool is_running;
-    bool close_request;
+struct window {
     int FPS;
     int current_width;
     int current_height;
@@ -21,44 +19,42 @@ struct {
                 {1280, 720}
 };
 
-bool init_sdl_win (int screen_width, int screen_height) {
-    app_win app;
+bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, int screen_height) {
     int render_flags, win_flags;
     render_flags = SDL_RENDERER_ACCELERATED;
     win_flags = 0;
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("Couldn't init SDL", SDL_GetError());
-        return 1;
+        return false;
     }
-    app.win = SDL_CreateWindow("Pong",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, win_flags);
-    if(!app.win) {
+    win = SDL_CreateWindow("Pong",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, win_flags);
+    if(!win) {
         printf("Failed to open %d x %d window: %s\n", screen_width, screen_height, SDL_GetError());
-        return 1;
+        return false;
     }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-    app.renderer = SDL_CreateRenderer(app.win, -1, render_flags);
+    renderer = SDL_CreateRenderer(win, -1, render_flags);
     
-    if(!app.renderer) {
+    if(!renderer) {
         printf("Failed to create Renderer: %s\n", SDL_GetError());
-        return 1;
+        return false;
     }
-    return 0;
+    return true;
 }
 
-/*
-bool handle_events(bool game_state, SDL_Event event) {
-    while(SDL_PollEvent(&event)) {
-        switch (event.type) {
-            case SDL_QUIT :
-                game_state = 1;
-                printf("Game will end");
-                break;
+void handle_input(window close_request) {
+    SDL_Event event;
+    while(!close_request) {
+        while (SDL_PollEvent(&event)) {
+            switch (event.type) {
+                case SDL_QUIT :
+                    printf("Game will end");
+                    break;
+            }
         }
-        if()
     }
-    return game_state;
 }
- */
+
 int main() {
     const SDL_MessageBoxButtonData buttons[] = {
             { /* .flags, .buttonid, .text */        0, 0, "640x480" },
@@ -92,25 +88,25 @@ int main() {
 
     if (SDL_ShowMessageBox(&messageboxdata, &button_id) < 0) {
         SDL_Log("error displaying message box");
-        return 1;
+        return false;
     }
- /*   else
+     else
     {
         printf("resolution is %d x %d", resolutions[button_id].width, resolutions[button_id].height);
     }
     if (button_id == -1) {
         SDL_Log("no resolution was picked");
     }
-    */
-   bool keys[322]; // number of ALL SDL_KEYDOWN Events
-    for(int key = 0; key < 322; key++) {
-        keys[key] = false; // initialize them to false
+
+    window application;
+    application.current_width = resolutions[button_id].width;
+    application.current_height = resolutions[button_id].height;
+    bool is_running =  init_sdl_win(application.renderer, application.win, application.current_width, application.current_height);
+    while(is_running) {
+        SDL_SetRenderDrawColor(application.renderer, 255,0,0,255);
+        SDL_RenderPresent(application.renderer);
     }
-    SDL_Event ev;
-  // bool is_running =  init_sdl_win(resolutions[button_id].width, resolutions[button_id].height);
-   // while(is_running) {
-        //handle_events(is_running, ev);
-       // }
+    
     printf("\nExecution ended");
     return 0;
 }
