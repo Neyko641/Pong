@@ -18,6 +18,12 @@ struct {
                 {800, 600},
                 {1280, 720}
 };
+enum inputs {
+    KEY_PRESS_DEFAULT,
+    KEY_PRESS_UP,
+    KEY_PRESS_DOWN,
+    KEY_PRESS_PAUSE,
+};
 
 bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, int screen_height) {
     int render_flags, win_flags;
@@ -39,15 +45,33 @@ bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, in
         printf("Failed to create Renderer: %s\n", SDL_GetError());
         return false;
     }
+    SDL_SetRenderDrawColor(renderer, 0,0,0,255);
+    SDL_RenderPresent(renderer);
+
     return true;
 }
 
-void handle_input(bool *state) {
+void handle_input(bool *state, inputs g_current_input) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
-        switch (event.type) {
-            case SDL_QUIT : *state = false;
-                break;
+        if(event.type == SDL_QUIT) {
+            *state = false;
+        }
+        else if (event.type == SDL_KEYDOWN) {
+            switch (event.key.keysym.sym) {
+                case SDLK_UP:
+                    g_current_input =  KEY_PRESS_UP;
+                    printf("\nUP was pressed\n");
+                    break;
+                case SDLK_DOWN:
+                    g_current_input = KEY_PRESS_DOWN ;
+                    break;
+                case SDLK_ESCAPE: *state = false;
+                    break;
+                default:
+                    g_current_input = KEY_PRESS_DEFAULT;
+                    break;
+            }
         }
 
     }
@@ -100,17 +124,16 @@ int main() {
     application.width = resolutions[button_id].width;
     application.height = resolutions[button_id].height;
     bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height);
+    //handle input
+    inputs input = KEY_PRESS_DEFAULT;
     while(is_running) {
         //for some reason the handle input function doesn't want to poll the events.
-        handle_input(&is_running);
-        SDL_SetRenderDrawColor(application.renderer, 255,0,0,255);
-        SDL_RenderPresent(application.renderer);
+        handle_input(&is_running, input);
         SDL_Delay(1000/application.FPS);
     }
     SDL_DestroyRenderer(application.renderer);
     SDL_DestroyWindow(application.win);
     SDL_Quit();
     
-    printf("\nExecution ended");
     return 0;
 }
