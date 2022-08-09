@@ -49,7 +49,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     return true;
 }
 
-void handle_input(bool *state, inputs g_current_input) {
+void handle_input(bool *state) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if(event.type == SDL_QUIT) {
@@ -58,16 +58,15 @@ void handle_input(bool *state, inputs g_current_input) {
         else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
                 case SDLK_UP:
-                    g_current_input =  KEY_PRESS_UP;
                     printf("\nUP was pressed\n");
                     break;
                 case SDLK_DOWN:
-                    g_current_input = KEY_PRESS_DOWN ;
+                    printf("\nDOWN was pressed\n");
                     break;
                 case SDLK_ESCAPE: *state = false;
+                    printf("\nESC was pressed\n");
                     break;
                 default:
-                    g_current_input = KEY_PRESS_DEFAULT;
                     break;
             }
         }
@@ -125,7 +124,7 @@ int main() {
     //handle input
     inputs input = KEY_PRESS_DEFAULT;
     while(is_running) {
-        handle_input(&is_running, input);
+        handle_input(&is_running);
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 0,0,0,255);
         SDL_RenderPresent(application.renderer);
