@@ -25,7 +25,7 @@ enum inputs {
     KEY_PRESS_PAUSE,
 };
 
-bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, int screen_height) {
+bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height) {
     int render_flags, win_flags;
     render_flags = SDL_RENDERER_ACCELERATED;
     win_flags = 0;
@@ -45,8 +45,6 @@ bool init_sdl_win (SDL_Renderer *renderer, SDL_Window *win, int screen_width, in
         printf("Failed to create Renderer: %s\n", SDL_GetError());
         return false;
     }
-    SDL_SetRenderDrawColor(renderer, 0,0,0,255);
-    SDL_RenderPresent(renderer);
 
     return true;
 }
@@ -127,9 +125,11 @@ int main() {
     //handle input
     inputs input = KEY_PRESS_DEFAULT;
     while(is_running) {
-        //for some reason the handle input function doesn't want to poll the events.
         handle_input(&is_running, input);
-        SDL_Delay(1000/application.FPS);
+        SDL_RenderClear(application.renderer);
+        SDL_SetRenderDrawColor(application.renderer, 0,0,0,255);
+        SDL_RenderPresent(application.renderer);
+        //SDL_Delay(1000/application.FPS);
     }
     SDL_DestroyRenderer(application.renderer);
     SDL_DestroyWindow(application.win);
