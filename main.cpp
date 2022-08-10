@@ -10,6 +10,10 @@ struct window {
     SDL_Renderer *renderer;
     SDL_Window *win;
 };
+
+
+
+
 struct {
     int width;
     int height;
@@ -18,10 +22,10 @@ struct {
                 {800, 600},
                 {1280, 720}
 };
-struct player_pos {
-    int x;
-    int y;
-};
+/*
+struct player {
+    SDL_Rect paddle;
+};*/
 
 
 bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height) {
@@ -48,7 +52,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     return true;
 }
 
-void handle_input(bool *state) {
+void handle_input(bool *state, int *player_y_pos) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if(event.type == SDL_QUIT) {
@@ -56,14 +60,11 @@ void handle_input(bool *state) {
         }
         else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-                case SDLK_UP:
-                    printf("\nUP was pressed\n");
+                case SDLK_UP: *player_y_pos -= 10;
                     break;
-                case SDLK_DOWN:
-                    printf("\nDOWN was pressed\n");
+                case SDLK_DOWN: *player_y_pos += 10;
                     break;
                 case SDLK_ESCAPE: *state = false;
-                    printf("\nESC was pressed\n");
                     break;
                 default:
                     break;
@@ -72,12 +73,12 @@ void handle_input(bool *state) {
 
     }
 }
-SDL_Rect init_player(int init_start_x, int init_start_y, int texture_height, int texture_width) {
+SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int paddle_width) {
     SDL_Rect player;
-    player.h = texture_height;
-    player.w = texture_width;
-    player.x = init_start_x;
-    player.y = init_start_y;
+    player.h = paddle_height;
+    player.w = paddle_width;
+    player.x = paddle_x_pos;
+    player.y = paddle_y_pos;
 
     return player;
 }
@@ -120,6 +121,7 @@ int main() {
     if (SDL_ShowMessageBox(&message_box_data, &button_id) < 0) {
         SDL_Log("error displaying message box");
     }
+    /*
     else
     {
         printf("resolution is %d x %d", resolutions[button_id].width, resolutions[button_id].height);
@@ -127,26 +129,27 @@ int main() {
     if (button_id == -1) {
         SDL_Log("no resolution was picked");
     }
-
+*/
     window application;
     application.width = resolutions[button_id].width;
     application.height = resolutions[button_id].height;
 
     bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height);
-
-
+/* I'll come back to these later.
+    player player_1;
+    player player_2;
+  */
     const int player_1_start_x_pos = 20;
     const int player_start_y_pos = application.height / 2;
     const int player_height = 70;
     const int player_width = 15;
     const int player_2_start_x_pos = application.width - ((player_1_start_x_pos * 2));
-    printf("player 1 is at %d and player 2 is at %d", player_1_start_x_pos,player_2_start_x_pos);
     SDL_Rect p1 = init_player(player_1_start_x_pos, player_start_y_pos, player_height, player_width);
     SDL_Rect p2 = init_player(player_2_start_x_pos, player_start_y_pos, player_height, player_width);
 
 
-    while(is_running) {
-        handle_input(&is_running);
+    while (is_running) {
+        handle_input(&is_running,&p1.y);
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 255,255,255,255);
         draw_player(application.renderer, p1);
