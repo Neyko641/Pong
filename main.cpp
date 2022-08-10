@@ -52,7 +52,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     return true;
 }
 
-void handle_input(bool *state, int *player_y_pos) {
+void handle_input(bool *state, int *player_y_pos, int delta_time) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if(event.type == SDL_QUIT) {
@@ -60,9 +60,9 @@ void handle_input(bool *state, int *player_y_pos) {
         }
         else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-                case SDLK_UP: *player_y_pos -= 10;
+                case SDLK_UP: *player_y_pos -= 10 * delta_time;
                     break;
-                case SDLK_DOWN: *player_y_pos += 10;
+                case SDLK_DOWN: *player_y_pos += 10 * delta_time;
                     break;
                 case SDLK_ESCAPE: *state = false;
                     break;
@@ -148,8 +148,19 @@ int main() {
     SDL_Rect p2 = init_player(player_2_start_x_pos, player_start_y_pos, player_height, player_width);
 
 
+
+    //initial DT for slow PCs.
+    float t = 0.0F;
+    Uint32 current_time= SDL_GetTicks() * 1000;
     while (is_running) {
-        handle_input(&is_running,&p1.y);
+
+        Uint32 new_time = SDL_GetTicks();
+        float frame_time = new_time - current_time;
+        current_time = new_time;
+        handle_input(&is_running,&p1.y, frame_time);
+        t += frame_time;
+
+
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 255,255,255,255);
         draw_player(application.renderer, p1);
