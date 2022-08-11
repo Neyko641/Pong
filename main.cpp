@@ -14,8 +14,11 @@ struct Window {
     SDL_Window *win;
 };
 
-
-
+struct inputs {
+    bool UP;
+    bool DOWN;
+    bool PAUSE;
+};
 
 struct {
     int width;
@@ -52,18 +55,18 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     return true;
 }
 
-void handle_input(bool *state, int *player_y_pos) {
+void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
     SDL_Event event;
-        while (SDL_PollEvent(&event) != 0) {
+    while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
             *state = false;
         } else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
                 case SDLK_UP:
-                    *player_y_pos -= 10;
+                    key_press->UP = true;
                     break;
                 case SDLK_DOWN:
-                    *player_y_pos += 10;
+                    key_press->DOWN = true;
                     break;
                 case SDLK_ESCAPE:
                     *state = false;
@@ -71,10 +74,28 @@ void handle_input(bool *state, int *player_y_pos) {
                 default:
                     break;
             }
+        } else if (event.type == SDL_KEYUP) {
+            switch (event.key.keysym.sym) {
+                case SDLK_UP :
+                    key_press->UP = false;
+                    break;
+                case SDLK_DOWN :
+                    key_press->DOWN = false;
+                    break;
+                case SDLK_ESCAPE:
+                    break;
+                default:
+                    break;
+            }
         }
-
+        if (key_press->UP == true) {
+            *player_y_pos -= 10;
+        } else if (key_press->DOWN == true) {
+            *player_y_pos += 10;
+        }
     }
 }
+
 
 SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int paddle_width) {
     SDL_Rect player;
@@ -148,9 +169,9 @@ int main() {
     SDL_Rect p2 = init_player(player_2_start_x_pos, player_start_y_pos, player_height, player_width);
 
 
-
+    inputs keys;
     while (is_running) {
-        handle_input(&is_running,&p1.y);
+        handle_input(&is_running,&p1.y, &keys);
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 255,255,255,255);
         draw_player(application.renderer, p1);
