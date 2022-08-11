@@ -88,11 +88,11 @@ void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
                     break;
             }
         }
-        if (key_press->UP == true) {
-            *player_y_pos -= 10;
-        } else if (key_press->DOWN == true) {
-            *player_y_pos += 10;
-        }
+    }
+    if (key_press->UP == true) {
+        *player_y_pos -= 10;
+    } else if (key_press->DOWN == true) {
+        *player_y_pos += 10;
     }
 }
 
