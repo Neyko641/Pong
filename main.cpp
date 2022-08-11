@@ -2,8 +2,11 @@
 #include <SDL2/SDL_hints.h>
 #include <SDL2/SDL_render.h>
 #include <SDL2/SDL_video.h>
+#include <SDL2/SDL_events.h>
 #include <stdio.h>
-struct window {
+#include <time.h>
+
+struct Window {
     int FPS;
     int width;
     int height;
@@ -17,20 +20,17 @@ struct window {
 struct {
     int width;
     int height;
-} resolutions[] = {
+} Resolutions[] = {
                 {640, 480},
                 {800, 600},
                 {1280, 720}
 };
-/*
-struct player {
-    SDL_Rect paddle;
-};*/
+
 
 
 bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height) {
     int render_flags, win_flags;
-    render_flags = SDL_RENDERER_ACCELERATED;
+    render_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
     win_flags = 0;
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
         printf("Couldn't init SDL", SDL_GetError());
@@ -52,19 +52,21 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     return true;
 }
 
-void handle_input(bool *state, int *player_y_pos, int delta_time) {
+void handle_input(bool *state, int *player_y_pos) {
     SDL_Event event;
-    while (SDL_PollEvent(&event) != 0) {
-        if(event.type == SDL_QUIT) {
+        while (SDL_PollEvent(&event) != 0) {
+        if (event.type == SDL_QUIT) {
             *state = false;
-        }
-        else if (event.type == SDL_KEYDOWN) {
+        } else if (event.type == SDL_KEYDOWN) {
             switch (event.key.keysym.sym) {
-                case SDLK_UP: *player_y_pos -= 10 * delta_time;
+                case SDLK_UP:
+                    *player_y_pos -= 10;
                     break;
-                case SDLK_DOWN: *player_y_pos += 10 * delta_time;
+                case SDLK_DOWN:
+                    *player_y_pos += 10;
                     break;
-                case SDLK_ESCAPE: *state = false;
+                case SDLK_ESCAPE:
+                    *state = false;
                     break;
                 default:
                     break;
@@ -73,6 +75,7 @@ void handle_input(bool *state, int *player_y_pos, int delta_time) {
 
     }
 }
+
 SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int paddle_width) {
     SDL_Rect player;
     player.h = paddle_height;
@@ -82,7 +85,7 @@ SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int 
 
     return player;
 }
-SDL_Rect draw_player(SDL_Renderer *&renderer, SDL_Rect player) {
+void draw_player(SDL_Renderer *&renderer, SDL_Rect player) {
     SDL_RenderDrawRect(renderer, &player);
     SDL_RenderFillRect(renderer, &player);
 }
@@ -124,21 +127,18 @@ int main() {
     /*
     else
     {
-        printf("resolution is %d x %d", resolutions[button_id].width, resolutions[button_id].height);
+        printf("resolution is %d x %d", Resolutions[button_id].width, Resolutions[button_id].height);
     }
     if (button_id == -1) {
         SDL_Log("no resolution was picked");
     }
 */
-    window application;
-    application.width = resolutions[button_id].width;
-    application.height = resolutions[button_id].height;
+    Window application;
+    application.width = Resolutions[button_id].width;
+    application.height = Resolutions[button_id].height;
 
     bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height);
-/* I'll come back to these later.
-    player player_1;
-    player player_2;
-  */
+
     const int player_1_start_x_pos = 20;
     const int player_start_y_pos = application.height / 2;
     const int player_height = 70;
@@ -149,18 +149,8 @@ int main() {
 
 
 
-    //initial DT for slow PCs.
-    float t = 0.0F;
-    Uint32 current_time= SDL_GetTicks() * 1000;
     while (is_running) {
-
-        Uint32 new_time = SDL_GetTicks();
-        float frame_time = new_time - current_time;
-        current_time = new_time;
-        handle_input(&is_running,&p1.y, frame_time);
-        t += frame_time;
-
-
+        handle_input(&is_running,&p1.y);
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 255,255,255,255);
         draw_player(application.renderer, p1);
