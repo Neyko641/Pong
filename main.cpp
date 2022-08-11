@@ -54,6 +54,15 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
 
     return true;
 }
+void move_player(inputs *key_press, int *player_y_pos) {
+    short int dir;
+    if (key_press->UP == true) {
+        dir = -1;
+    } else if (key_press->DOWN == true) {
+        dir = 1;
+    }
+    *player_y_pos += dir * 10;
+}
 
 void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
     SDL_Event event;
@@ -89,12 +98,9 @@ void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
             }
         }
     }
-    if (key_press->UP == true) {
-        *player_y_pos -= 10;
-    } else if (key_press->DOWN == true) {
-        *player_y_pos += 10;
+    move_player(key_press, player_y_pos);
     }
-}
+
 
 
 SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int paddle_width) {
