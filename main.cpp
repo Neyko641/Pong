@@ -99,9 +99,13 @@ void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
         }
     }
     move_player(key_press, player_y_pos);
-    }
+}
 
-
+void destroy_window(SDL_Renderer *renderer, SDL_Window *win) {
+    SDL_DestroyRenderer(renderer);
+    SDL_DestroyWindow(win);
+    SDL_Quit();
+}
 
 SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int paddle_width) {
     SDL_Rect player;
@@ -186,9 +190,7 @@ int main() {
         SDL_RenderPresent(application.renderer);
         //SDL_Delay(1000/application.FPS);
     }
-    SDL_DestroyRenderer(application.renderer);
-    SDL_DestroyWindow(application.win);
-    SDL_Quit();
-    
+    destroy_window(application.renderer, application.win);
+
     return 0;
 }
