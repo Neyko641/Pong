@@ -4,7 +4,6 @@
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_events.h>
 #include <stdio.h>
-
 struct Window {
     int FPS;
     int width;
@@ -13,7 +12,7 @@ struct Window {
     SDL_Window *win;
 };
 
-struct inputs {
+struct Inputs {
     bool UP;
     bool DOWN;
     bool PAUSE;
@@ -27,7 +26,6 @@ struct {
                 {800, 600},
                 {1280, 720}
 };
-
 
 
 bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height) {
@@ -53,7 +51,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
 
     return true;
 }
-void move_player(inputs *key_press, int *player_y_pos, int player_speed, float delta_time) {
+void move_player(Inputs *key_press, int *player_y_pos, int player_speed, float delta_time) {
     short int dir;
     if (key_press->UP == true) {
         dir = -1;
@@ -63,7 +61,7 @@ void move_player(inputs *key_press, int *player_y_pos, int player_speed, float d
     *player_y_pos += dir * (player_speed * delta_time);
 }
 
-void handle_input(bool *state, int *player_y_pos, inputs *key_press, int player_speed, float dt) {
+void handle_input(bool *state, int *player_y_pos, Inputs *key_press, int player_speed, float dt) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
@@ -119,19 +117,33 @@ void draw_player(SDL_Renderer *&renderer, SDL_Rect player) {
     SDL_RenderDrawRect(renderer, &player);
     SDL_RenderFillRect(renderer, &player);
 }
-
+void draw_ball(SDL_Renderer *&renderer, SDL_Rect ball) {
+    SDL_RenderDrawRect(renderer, &ball);
+    SDL_RenderFillRect(renderer, &ball);
+}
 void player_wall_collision (int screen_height, int *player_y_pos, int paddle_height) {
     const int top_paddle_hit_box = screen_height;
     const int bottom_paddle_hit_box = 75;
     const int max_top_pos = screen_height - 75;
     const int max_bot_pos = screen_height - screen_height + 5;
-    if(*player_y_pos + paddle_height >= top_paddle_hit_box) {
+    if(*player_y_pos + paddle_height > top_paddle_hit_box) {
         *player_y_pos = max_top_pos;
-    } else if (*player_y_pos + paddle_height <= bottom_paddle_hit_box) {
+    } else if (*player_y_pos + paddle_height < bottom_paddle_hit_box) {
         *player_y_pos =  max_bot_pos;
     }
 }
+SDL_Rect init_ball(int ball_pos_x, int ball_pos_y, int ball_width, int ball_height) {
+    SDL_Rect ball;
+    ball.h = ball_height;
+    ball.w = ball_width;
+    ball.x = ball_pos_x;
+    ball.y = ball_pos_y;
 
+    return ball;
+}
+
+
+//void player_ball_collision(int paddle_height, )
 int main() {
     const SDL_MessageBoxButtonData buttons[] = {
             { /* .flags, .button id, .text */        0, 0, "640x480" },
@@ -178,25 +190,35 @@ int main() {
     Window application;
     application.width = Resolutions[button_id].width;
     application.height = Resolutions[button_id].height;
-
     bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height);
 
+
+    //player params
     const int player_1_start_x_pos = 20;
     const int player_start_y_pos = application.height / 2;
     const int player_height = 70;
     const int player_width = 15;
     const int player_2_start_x_pos = application.width - ((player_1_start_x_pos * 2));
+
+    //ball params
+    const int ball_start_x_pos = application.width / 2;
+    const int ball_start_y_pos = application.height / 2;
+    const int ball_height = 10;
+    const int ball_width = 10;
     SDL_Rect p1 = init_player(player_1_start_x_pos, player_start_y_pos, player_height, player_width);
     SDL_Rect p2 = init_player(player_2_start_x_pos, player_start_y_pos, player_height, player_width);
-    const int SPEED = 1250;
 
-    inputs keys;
+    const int SPEED = 1250;
+    SDL_Rect b = init_ball(ball_start_x_pos, ball_start_y_pos, ball_width, ball_height);
+    Inputs keys;
+
     while (is_running) {
         Uint32 start = SDL_GetTicks();
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 255,255,255,255);
         draw_player(application.renderer, p1);
         draw_player(application.renderer, p2);
+        draw_ball(application.renderer, b);
         SDL_SetRenderDrawColor(application.renderer, 0, 0, 0, 255);
         SDL_RenderPresent(application.renderer);
         Uint32 end = SDL_GetTicks();
