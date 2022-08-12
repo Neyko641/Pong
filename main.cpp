@@ -120,6 +120,18 @@ void draw_player(SDL_Renderer *&renderer, SDL_Rect player) {
     SDL_RenderFillRect(renderer, &player);
 }
 
+void player_wall_collision (int screen_height, int *player_y_pos, int paddle_height) {
+    const int top_paddle_hit_box = screen_height;
+    const int bottom_paddle_hit_box = 75;
+    const int max_top_pos = screen_height - 75;
+    const int max_bot_pos = screen_height - screen_height + 5;
+    if(*player_y_pos + paddle_height >= top_paddle_hit_box) {
+        *player_y_pos = max_top_pos;
+    } else if (*player_y_pos + paddle_height <= bottom_paddle_hit_box) {
+        *player_y_pos =  max_bot_pos;
+    }
+}
+
 int main() {
     const SDL_MessageBoxButtonData buttons[] = {
             { /* .flags, .button id, .text */        0, 0, "640x480" },
@@ -190,7 +202,7 @@ int main() {
         Uint32 end = SDL_GetTicks();
         float elapsed_seconds = (end - start) / 1000.0F;
         handle_input(&is_running,&p1.y, &keys, SPEED, elapsed_seconds);
-
+        player_wall_collision(application.height, &p1.y, p1.h);
         //SDL_Delay(1000/application.FPS);
     }
     destroy_window(application.renderer, application.win);
