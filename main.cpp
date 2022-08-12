@@ -4,7 +4,6 @@
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_events.h>
 #include <stdio.h>
-#include <time.h>
 
 struct Window {
     int FPS;
@@ -54,17 +53,17 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
 
     return true;
 }
-void move_player(inputs *key_press, int *player_y_pos) {
+void move_player(inputs *key_press, int *player_y_pos, int player_speed, float delta_time) {
     short int dir;
     if (key_press->UP == true) {
         dir = -1;
     } else if (key_press->DOWN == true) {
         dir = 1;
     }
-    *player_y_pos += dir * 10;
+    *player_y_pos += dir * (player_speed * delta_time);
 }
 
-void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
+void handle_input(bool *state, int *player_y_pos, inputs *key_press, int player_speed, float dt) {
     SDL_Event event;
     while (SDL_PollEvent(&event) != 0) {
         if (event.type == SDL_QUIT) {
@@ -98,7 +97,7 @@ void handle_input(bool *state, int *player_y_pos, inputs *key_press) {
             }
         }
     }
-    move_player(key_press, player_y_pos);
+    move_player(key_press, player_y_pos, player_speed, dt);
 }
 
 void destroy_window(SDL_Renderer *renderer, SDL_Window *win) {
@@ -177,17 +176,21 @@ int main() {
     const int player_2_start_x_pos = application.width - ((player_1_start_x_pos * 2));
     SDL_Rect p1 = init_player(player_1_start_x_pos, player_start_y_pos, player_height, player_width);
     SDL_Rect p2 = init_player(player_2_start_x_pos, player_start_y_pos, player_height, player_width);
-
+    const int SPEED = 1250;
 
     inputs keys;
     while (is_running) {
-        handle_input(&is_running,&p1.y, &keys);
+        Uint32 start = SDL_GetTicks();
         SDL_RenderClear(application.renderer);
         SDL_SetRenderDrawColor(application.renderer, 255,255,255,255);
         draw_player(application.renderer, p1);
         draw_player(application.renderer, p2);
         SDL_SetRenderDrawColor(application.renderer, 0, 0, 0, 255);
         SDL_RenderPresent(application.renderer);
+        Uint32 end = SDL_GetTicks();
+        float elapsed_seconds = (end - start) / 1000.0F;
+        handle_input(&is_running,&p1.y, &keys, SPEED, elapsed_seconds);
+
         //SDL_Delay(1000/application.FPS);
     }
     destroy_window(application.renderer, application.win);
