@@ -22,9 +22,9 @@ struct {
     int width;
     int height;
 } Resolutions[] = {
-                {640, 480},
-                {800, 600},
-                {1280, 720}
+        {640, 480},
+        {800, 600},
+        {1280, 720}
 };
 
 
@@ -43,7 +43,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     }
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
     renderer = SDL_CreateRenderer(win, -1, render_flags);
-    
+
     if(!renderer) {
         printf("Failed to create Renderer: %s\n", SDL_GetError());
         return false;
@@ -122,6 +122,7 @@ void draw_ball(SDL_Renderer *&renderer, SDL_Rect ball) {
     SDL_RenderFillRect(renderer, &ball);
 }
 void player_wall_collision (int screen_height, int *player_y_pos, int paddle_height) {
+    //Buy me a book on physics, please.
     const int top_paddle_hit_box = screen_height;
     const int bottom_paddle_hit_box = 75;
     const int max_top_pos = screen_height - 75;
@@ -194,9 +195,10 @@ int main() {
 
 
     //player params
+    //govnokod ood.
     const int player_1_start_x_pos = 20;
     const int player_start_y_pos = application.height / 2;
-    const int player_height = 70;
+    const int player_height = 75;
     const int player_width = 15;
     const int player_2_start_x_pos = application.width - ((player_1_start_x_pos * 2));
 
