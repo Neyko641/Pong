@@ -5,6 +5,7 @@
 #include <SDL2/SDL_events.h>
 #include <algorithm>
 #include <SDL2/SDL_ttf.h>
+#include <stdlib.h>
 #include <time.h>
 #include <stdio.h>
 struct Window {
@@ -12,6 +13,7 @@ struct Window {
     int height;
     SDL_Renderer *renderer;
     SDL_Window *win;
+    TTF_Font *score_font;
 };
 
 struct Inputs {
@@ -41,7 +43,7 @@ struct Ball {
     float speed;
 };
 
-bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height) {
+bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height/*, TTF_Font *&score_font*/) {
     int render_flags, win_flags;
     render_flags = SDL_RENDERER_ACCELERATED;
     win_flags = 0;
@@ -49,9 +51,15 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
         printf("Couldn't init SDL", SDL_GetError());
         return false;
     }
-
+/*
     TTF_Init();
-
+    //create font
+    score_font = TTF_OpenFont("DejaVuSans.ttf",40);
+    if (TTF_Init() == -1) {
+        printf("Couldn't initialize TTF");
+        return false;
+    }
+    */
     win = SDL_CreateWindow("Pong",SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, win_flags);
     if(!win) {
         printf("Failed to open %d x %d window: %s\n", screen_width, screen_height, SDL_GetError());
@@ -68,9 +76,22 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     return true;
 }
 
-
+int random_number(int high, int low) {
+    return rand() % high + low;
+}
+bool intersection (int x, int y, SDL_Rect player) {
+    if(x > player.x &&
+       y > player.y &&
+       x < player.x + player.w &&
+       y < player.y + player.h) {
+        return true;
+    }
+    return false;
+}
 
 void check_ball_collisions(Ball &ball, int screen_height, SDL_Rect &paddle_p1, SDL_Rect &paddle_p2) {
+
+    //wall collisions
     if (ball.pos.y < ball.radius) {
         ball.pos.y = ball.radius;
         ball.dir.y = -ball.dir.y;
@@ -78,7 +99,11 @@ void check_ball_collisions(Ball &ball, int screen_height, SDL_Rect &paddle_p1, S
         ball.pos.y = screen_height - ball.radius;
         ball.dir.y = -ball.dir.y;
     }
-
+    //player collisions
+    /*
+    if(intersection(ball.pos.x, ball.pos.y, paddle_p1) == true ||
+            intersection(ball.pos.x +))
+*/
 }
 void move_ball(Ball &ball, float dt, int screen_width) {
     ball.pos.x += ball.dir.x * dt * ball.speed;
@@ -109,9 +134,9 @@ void handle_input(bool *is_running, Inputs *key_press) {
     }
 }
 
-void destroy_window(SDL_Renderer *renderer, SDL_Window *win, TTF_Font* score_font) {
+void destroy_window(SDL_Renderer *renderer, SDL_Window *win/*, TTF_Font *score_font*/) {
     SDL_DestroyRenderer(renderer);
-    TTF_CloseFont(score_font);
+    //TTF_CloseFont(score_font);
     SDL_DestroyWindow(win);
     SDL_Quit();
 }
@@ -151,7 +176,6 @@ void player_wall_collision(int screen_height, float &player_y, int paddle_height
 }
 
 
-//void player_ball_collision(int paddle_height, )
 int main() {
     const SDL_MessageBoxButtonData buttons[] = {
             { /* .flags, .button id, .text */        0, 0, "640x480" },
@@ -196,16 +220,14 @@ int main() {
     }
 */
 
-    //create font
-    TTF_Font* score_font = TTF_OpenFont("DejaVuSansMono.ttf",40);
 
     Window application;
     application.width = Resolutions[button_id].width;
     application.height = Resolutions[button_id].height;
-    bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height);
+    bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height/*, application.score_font*/);
 
     //player params
-    const int player_1_start_x_pos = 50;
+    const int player_1_start_x_pos = 20;
     const int player_start_y_pos = application.height / 2;
     const int paddle_height = 75;
     const int paddle_width = 15;
@@ -221,14 +243,15 @@ int main() {
 
 
     const float PADDLE_SPEED = 500.0f;
+    float BALL_SPEED = PADDLE_SPEED / 6.0f;
     Inputs keys = {};
 
     float player_y = player_start_y_pos;
 
-    Ball ball = { {(float)ball_start_x_pos, (float)ball_start_y_pos}, {-1.0f, 0.0f}, 5.0f, 100.0f };;
+    Ball ball = { {(float)ball_start_x_pos, (float)ball_start_y_pos}, {-1.0f, 0.0f}, 5.0f, BALL_SPEED };;
 
     Uint32 now = SDL_GetTicks();
-
+    srand(time(nullptr));
     while (is_running) {
         Uint32 last = now;
         now = SDL_GetTicks();
@@ -250,7 +273,7 @@ int main() {
 
         SDL_RenderPresent(application.renderer);
     }
-    destroy_window(application.renderer, application.win, score_font);
+    destroy_window(application.renderer, application.win/*, application.score_font*/);
 
     return 0;
 }
