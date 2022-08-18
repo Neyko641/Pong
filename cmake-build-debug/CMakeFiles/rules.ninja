@@ -42,7 +42,7 @@ rule CUSTOM_COMMAND
 # Rule for re-running cmake.
 
 rule RERUN_CMAKE
-  command = /mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/bin/cmake --regenerate-during-build -S/mnt/hdd/Projects/Cpp-Projects/Pong -B/mnt/hdd/Projects/Cpp-Projects/Pong/cmake-build-debug
+  command = /snap/clion/203/bin/cmake/linux/bin/cmake --regenerate-during-build -S/home/neyko641/Projects/Pong/Pong -B/home/neyko641/Projects/Pong/Pong/cmake-build-debug
   description = Re-running CMake...
   generator = 1
 
@@ -51,7 +51,7 @@ rule RERUN_CMAKE
 # Rule for cleaning all built files.
 
 rule CLEAN
-  command = /mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/ninja/linux/ninja $FILE_ARG -t clean $TARGETS
+  command = /snap/clion/203/bin/ninja/linux/ninja $FILE_ARG -t clean $TARGETS
   description = Cleaning all built files...
 
 
@@ -59,6 +59,6 @@ rule CLEAN
 # Rule for printing all primary targets available.
 
 rule HELP
-  command = /mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/ninja/linux/ninja -t targets
+  command = /snap/clion/203/bin/ninja/linux/ninja -t targets
   description = All primary targets available:
 

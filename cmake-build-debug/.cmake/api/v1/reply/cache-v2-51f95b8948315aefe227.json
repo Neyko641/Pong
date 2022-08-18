@@ -55,7 +55,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/hdd/Projects/Cpp-Projects/Pong/cmake-build-debug"
+			"value" : "/home/neyko641/Projects/Pong/Pong/cmake-build-debug"
 		},
 		{
 			"name" : "CMAKE_CACHE_MAJOR_VERSION",
@@ -103,7 +103,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/bin/cmake"
+			"value" : "/snap/clion/203/bin/cmake/linux/bin/cmake"
 		},
 		{
 			"name" : "CMAKE_CPACK_COMMAND",
@@ -115,7 +115,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/bin/cpack"
+			"value" : "/snap/clion/203/bin/cmake/linux/bin/cpack"
 		},
 		{
 			"name" : "CMAKE_CTEST_COMMAND",
@@ -127,7 +127,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/bin/ctest"
+			"value" : "/snap/clion/203/bin/cmake/linux/bin/ctest"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER",
@@ -159,7 +159,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ar"
+			"value" : "/usr/bin/gcc-ar-11"
 		},
 		{
 			"name" : "CMAKE_CXX_COMPILER_RANLIB",
@@ -175,7 +175,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ranlib"
+			"value" : "/usr/bin/gcc-ranlib-11"
 		},
 		{
 			"name" : "CMAKE_CXX_FLAGS",
@@ -287,7 +287,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ar"
+			"value" : "/usr/bin/gcc-ar-11"
 		},
 		{
 			"name" : "CMAKE_C_COMPILER_RANLIB",
@@ -303,7 +303,7 @@
 				}
 			],
 			"type" : "FILEPATH",
-			"value" : "/usr/bin/gcc-ranlib"
+			"value" : "/usr/bin/gcc-ranlib-11"
 		},
 		{
 			"name" : "CMAKE_C_FLAGS",
@@ -411,7 +411,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/bin/ccmake"
+			"value" : "/snap/clion/203/bin/cmake/linux/bin/ccmake"
 		},
 		{
 			"name" : "CMAKE_EXECUTABLE_FORMAT",
@@ -591,7 +591,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/hdd/Projects/Cpp-Projects/Pong"
+			"value" : "/home/neyko641/Projects/Pong/Pong"
 		},
 		{
 			"name" : "CMAKE_INSTALL_PREFIX",
@@ -615,7 +615,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "0"
+			"value" : "1"
 		},
 		{
 			"name" : "CMAKE_LINKER",
@@ -643,7 +643,7 @@
 				}
 			],
 			"type" : "UNINITIALIZED",
-			"value" : "/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/ninja/linux/ninja"
+			"value" : "/snap/clion/203/bin/ninja/linux/ninja"
 		},
 		{
 			"name" : "CMAKE_MODULE_LINKER_FLAGS",
@@ -875,7 +875,7 @@
 				}
 			],
 			"type" : "INTERNAL",
-			"value" : "/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/share/cmake-3.23"
+			"value" : "/snap/clion/203/bin/cmake/linux/share/cmake-3.23"
 		},
 		{
 			"name" : "CMAKE_SHARED_LINKER_FLAGS",
@@ -1123,7 +1123,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/mnt/hdd/Projects/Cpp-Projects/Pong/cmake-build-debug"
+			"value" : "/home/neyko641/Projects/Pong/Pong/cmake-build-debug"
 		},
 		{
 			"name" : "Pong_IS_TOP_LEVEL",
@@ -1147,7 +1147,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "/mnt/hdd/Projects/Cpp-Projects/Pong"
+			"value" : "/home/neyko641/Projects/Pong/Pong"
 		},
 		{
 			"name" : "SDL2_DIR",
@@ -1159,7 +1159,7 @@
 				}
 			],
 			"type" : "PATH",
-			"value" : "/usr/lib64/cmake/SDL2"
+			"value" : "/usr/lib/x86_64-linux-gnu/cmake/SDL2"
 		}
 	],
 	"kind" : "cache",

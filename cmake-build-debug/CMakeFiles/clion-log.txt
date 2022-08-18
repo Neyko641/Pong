@@ -1,4 +1,4 @@
-/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/mnt/ssd/IDE/Toolbox/apps/CLion/ch-0/222.3345.126/bin/ninja/linux/ninja -G Ninja -S /mnt/hdd/Projects/Cpp-Projects/Pong -B /mnt/hdd/Projects/Cpp-Projects/Pong/cmake-build-debug
+/snap/clion/203/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/203/bin/ninja/linux/ninja -G Ninja -S /home/neyko641/Projects/Pong/Pong -B /home/neyko641/Projects/Pong/Pong/cmake-build-debug
 -- Configuring done
 -- Generating done
--- Build files have been written to: /mnt/hdd/Projects/Cpp-Projects/Pong/cmake-build-debug
+-- Build files have been written to: /home/neyko641/Projects/Pong/Pong/cmake-build-debug

@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "Pong::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-Pong-Debug-e4ab76b31d9d3d074372.json",
+					"jsonFile" : "target-Pong-Debug-f040a478b6fe8f3f8e2e.json",
 					"name" : "Pong",
 					"projectIndex" : 0
 				}
@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/mnt/hdd/Projects/Cpp-Projects/Pong/cmake-build-debug",
-		"source" : "/mnt/hdd/Projects/Cpp-Projects/Pong"
+		"build" : "/home/neyko641/Projects/Pong/Pong/cmake-build-debug",
+		"source" : "/home/neyko641/Projects/Pong/Pong"
 	},
 	"version" : 
 	{
