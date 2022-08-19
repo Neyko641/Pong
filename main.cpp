@@ -42,7 +42,16 @@ struct Ball {
     float radius;
     float speed;
 };
-
+ enum collision_type {
+     None,
+     Top,
+     Middle,
+     Bottom
+ };
+ struct Contact {
+    collision_type type;
+    float penetration;
+ };
 bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height/*, TTF_Font *&score_font*/) {
     int render_flags, win_flags;
     render_flags = SDL_RENDERER_ACCELERATED;
@@ -75,20 +84,60 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
 
     return true;
 }
+void collide_with_paddle(Ball &ball,Contact const& contact) {
+    ball.pos.x += contact.penetration;
+    if(contact.type == collision_type::Top) {
 
-int random_number(int high, int low) {
-    return rand() % high + low;
-}
-bool intersection (int x, int y, SDL_Rect player) {
-    if(x > player.x &&
-       y > player.y &&
-       x < player.x + player.w &&
-       y < player.y + player.h) {
-        return true;
+    } else if (contact.type == collision_type::Bottom) {
+
     }
-    return false;
 }
+Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
+    //using SAT instead of AABB collision
+    float ball_left = ball.pos.x;
+    float ball_right = ball.pos.x + (ball.radius * 3);
+    float ball_top = ball.pos.y;
+    float ball_bottom = ball.pos.y + (ball.radius * 3);
 
+    float paddle_left = paddle.x;
+    float paddle_right = paddle.x + paddle.w;
+    float paddle_top = paddle.y;
+    float paddle_bottom = paddle.y + paddle.h;
+
+    Contact contact{};
+
+    if( ball_left >= paddle_right) {
+        return contact;
+    }
+    if(ball_right <= paddle_left) {
+        return contact;
+    }
+    if(ball_top >= paddle_bottom) {
+        return contact;
+    }
+    if(ball_bottom <= paddle_top) {
+        return contact;
+    }
+    float paddle_range_upper = paddle_bottom - (2.0f * paddle.h / 3.0f);
+    float paddle_range_middle = paddle_bottom - (paddle.h / 3.0f);
+
+    if(ball.dir.x < 0) {
+        contact.penetration = paddle_right - ball_left;
+    } else if (ball.dir.x > 0) {
+        contact.penetration = paddle_left - ball_right;
+    }
+    if ((ball_bottom > paddle_top) &&
+        (ball_bottom < paddle_range_upper)) {
+        contact.type = collision_type::Top;
+    }
+    else if ((ball_bottom > paddle_range_upper) &&
+             (ball_bottom < paddle_range_middle)) {
+        contact.type = collision_type::Middle;
+    } else {
+        contact.type = collision_type::Bottom;
+    }
+    return contact;
+}
 void check_ball_collisions(Ball &ball, int screen_height, SDL_Rect &paddle_p1, SDL_Rect &paddle_p2) {
 
     //wall collisions
@@ -100,12 +149,16 @@ void check_ball_collisions(Ball &ball, int screen_height, SDL_Rect &paddle_p1, S
         ball.dir.y = -ball.dir.y;
     }
     //player collisions
-    /*
-    if(intersection(ball.pos.x, ball.pos.y, paddle_p1) == true ||
-            intersection(ball.pos.x +))
-*/
+    if(Contact contact = check_paddle_collision(ball, paddle_p1);
+    contact.type != collision_type::None) {
+        collide_with_paddle(ball, contact);
+    } else if(contact = check_paddle_collision(ball, paddle_p2);
+            contact.type != collision_type::None) {
+        collide_with_paddle(ball, contact);
+    }
+
 }
-void move_ball(Ball &ball, float dt, int screen_width) {
+void move_ball(Ball &ball, float dt) {
     ball.pos.x += ball.dir.x * dt * ball.speed;
     ball.pos.y += ball.dir.y * dt * ball.speed;
 
@@ -160,8 +213,8 @@ void draw_ball(SDL_Renderer *renderer, const Ball &ball) {
     SDL_Rect ball_rect = {
             (int)(ball.pos.x - ball.radius),
             (int)(ball.pos.y - ball.radius),
-            (int)(ball.radius * 2),
-            (int)(ball.radius * 2)
+            (int)(ball.radius * 3),
+            (int)(ball.radius * 3)
     };
 
     SDL_RenderFillRect(renderer, &ball_rect);
@@ -227,7 +280,7 @@ int main() {
     bool is_running =  init_sdl_win(application.renderer, application.win, application.width, application.height/*, application.score_font*/);
 
     //player params
-    const int player_1_start_x_pos = 20;
+    const int player_1_start_x_pos = 50;
     const int player_start_y_pos = application.height / 2;
     const int paddle_height = 75;
     const int paddle_width = 15;
@@ -260,11 +313,10 @@ int main() {
         handle_input(&is_running, &keys);
         p1.y = player_y;
         move_player(keys, &player_y, PADDLE_SPEED, dt);
-        move_ball(ball, dt, application.width);
+        move_ball(ball, dt);
         check_ball_collisions(ball, application.height, p1, p2);
 
         player_wall_collision(application.height, player_y, p1.h);
-
         SDL_SetRenderDrawColor(application.renderer, 0, 0, 0, 255);
         SDL_RenderClear(application.renderer);
         draw_player(application.renderer, &p1);
