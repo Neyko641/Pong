@@ -41,12 +41,15 @@ struct Ball {
     Vec2f dir;
     float radius;
     float speed;
+
 };
  enum collision_type {
      None,
      Top,
      Middle,
-     Bottom
+     Bottom,
+     Left,
+     Right
  };
  struct Contact {
     collision_type type;
@@ -86,11 +89,32 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
 }
 void collide_with_paddle(Ball &ball,Contact const& contact) {
     ball.pos.x += contact.penetration;
+    ball.dir.x = -ball.dir.x;
     if(contact.type == collision_type::Top) {
-
+        ball.dir.y = -0.75f * ball.speed;
     } else if (contact.type == collision_type::Bottom) {
-
+        ball.dir.y = 0.75f * ball.speed;
     }
+}
+Contact check_ball_wall_collision (Ball const &ball, int screen_height, int screen_width) {
+    float ball_left = ball.pos.x;
+    float ball_right = ball.pos.x + (ball.radius * 3);
+    float ball_top = ball.pos.y;
+    float ball_bottom = ball.pos.y + (ball.radius * 3);
+
+    Contact contact{};
+    if(ball_left < 0.0f) {
+        contact.type = collision_type::Left;
+    } else if (ball_right > screen_width) {
+        contact.type = collision_type::Right;
+    } else if (ball_top < 0.0f) {
+        contact.type = collision_type::Top;
+        contact.penetration = -ball_top;
+    } else if(ball_bottom > screen_height) {
+        contact.type = collision_type::Bottom;
+        contact.penetration = screen_height - ball_bottom;
+    }
+    return contact;
 }
 Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
     //using SAT instead of AABB collision
@@ -138,26 +162,35 @@ Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
     }
     return contact;
 }
-void check_ball_collisions(Ball &ball, int screen_height, SDL_Rect &paddle_p1, SDL_Rect &paddle_p2) {
-
-    //wall collisions
-    if (ball.pos.y < ball.radius) {
-        ball.pos.y = ball.radius;
-        ball.dir.y = -ball.dir.y;
-    } else if (ball.pos.y > screen_height - ball.radius) {
-        ball.pos.y = screen_height - ball.radius;
-        ball.dir.y = -ball.dir.y;
+void collide_with_wall (Contact const &contact, Ball &ball, int screen_width, int screen_height) {
+    if((contact.type == collision_type::Top) || contact.type == collision_type::Bottom) {
+        ball.pos.y = contact.penetration;
+        ball.dir.x = -ball.dir.x;
+    }  else if (contact.type == collision_type::Left) {
+        ball.pos.x = screen_width / 2.0F;
+        ball.pos.y = screen_height / 2.0F;
+        ball.dir.x = ball.speed;
+        ball.dir.y = 0.75 * ball.speed;
+    } else if(contact.type == collision_type::Right) {
+        ball.pos.x = screen_width / 2.0F;
+        ball.pos.y = screen_height / 2.0F;
+        ball.dir.x = -ball.speed;
+        ball.dir.y = 0.75f * ball.speed;
     }
-    //player collisions
-    if(Contact contact = check_paddle_collision(ball, paddle_p1);
-    contact.type != collision_type::None) {
-        collide_with_paddle(ball, contact);
-    } else if(contact = check_paddle_collision(ball, paddle_p2);
+}
+void check_player_collision(Ball &ball, SDL_Rect &paddle_p1, SDL_Rect &paddle_p2, int screen_height, int screen_width) {
+    if (Contact contact = check_paddle_collision(ball, paddle_p1);
             contact.type != collision_type::None) {
         collide_with_paddle(ball, contact);
+    } else if (contact = check_paddle_collision(ball, paddle_p2);
+            contact.type != collision_type::None) {
+        collide_with_paddle(ball, contact);
+    } else if (contact = check_ball_wall_collision(ball, screen_height, screen_width);
+    contact.type != collision_type::None) {
+        collide_with_wall(contact,ball,screen_width, screen_height);
     }
-
 }
+
 void move_ball(Ball &ball, float dt) {
     ball.pos.x += ball.dir.x * dt * ball.speed;
     ball.pos.y += ball.dir.y * dt * ball.speed;
@@ -314,7 +347,7 @@ int main() {
         p1.y = player_y;
         move_player(keys, &player_y, PADDLE_SPEED, dt);
         move_ball(ball, dt);
-        check_ball_collisions(ball, application.height, p1, p2);
+        check_player_collision(ball, p1, p2, application.height, application.width);
 
         player_wall_collision(application.height, player_y, p1.h);
         SDL_SetRenderDrawColor(application.renderer, 0, 0, 0, 255);
