@@ -44,18 +44,21 @@ struct Ball {
     float speed;
 
 };
- enum collision_type {
-     None,
-     Top,
-     Middle,
-     Bottom,
-     Left,
-     Right
- };
- struct Contact {
-    collision_type type;
-    float penetration;
- };
+
+enum collision_type {
+    None,
+    Top,
+    Middle,
+    Bottom,
+    Left,
+    Right
+};
+
+struct Contact {
+   collision_type type;
+   float penetration;
+};
+
 bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, int screen_height/*, TTF_Font *&score_font*/) {
     int render_flags, win_flags;
     render_flags = SDL_RENDERER_ACCELERATED;
@@ -88,6 +91,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
 
     return true;
 }
+
 void collide_with_paddle(Ball &ball,Contact const& contact) {
     ball.pos.x += contact.penetration;
     ball.dir.x = -ball.dir.x;
@@ -97,6 +101,7 @@ void collide_with_paddle(Ball &ball,Contact const& contact) {
         ball.dir.y = 0.75f * ball.speed;
     }
 }
+
 Contact check_ball_wall_collision (Ball const &ball, int screen_height, int screen_width) {
     float ball_left = ball.pos.x;
     float ball_right = ball.pos.x + (ball.radius * 3);
@@ -117,6 +122,7 @@ Contact check_ball_wall_collision (Ball const &ball, int screen_height, int scre
     }
     return contact;
 }
+
 Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
     //using SAT instead of AABB collision
     float ball_left = ball.pos.x;
@@ -163,6 +169,7 @@ Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
     }
     return contact;
 }
+
 void collide_with_wall (Contact const &contact, Ball &ball, int screen_width, int screen_height) {
     if((contact.type == collision_type::Top) || contact.type == collision_type::Bottom) {
         ball.pos.y = contact.penetration;
@@ -179,21 +186,27 @@ void collide_with_wall (Contact const &contact, Ball &ball, int screen_width, in
         ball.dir.y = 0.75f * ball.speed;
     }
 }
+
 void check_player_collision(Ball &ball, SDL_Rect &paddle_p1, SDL_Rect &paddle_p2, int screen_height, int screen_width) {
-    //Contact contact_l = check_paddle_collision(ball, paddle_p1);
-    //if (contact_l.type != collision_type::None)
-    //{
-//
-    //}
-    if (Contact contact = check_paddle_collision(ball, paddle_p1);
-            contact.type != collision_type::None) {
-        collide_with_paddle(ball, contact);
-    } else if (contact = check_paddle_collision(ball, paddle_p2);
-            contact.type != collision_type::None) {
-        collide_with_paddle(ball, contact);
-    } else if (contact = check_ball_wall_collision(ball, screen_height, screen_width);
-    contact.type != collision_type::None) {
-        collide_with_wall(contact,ball,screen_width, screen_height);
+    Contact contact_l = check_paddle_collision(ball, paddle_p1);
+    if (contact_l.type != collision_type::None)
+    {
+        collide_with_paddle(ball, contact_l);
+        return;
+    }
+
+    contact_l = check_paddle_collision(ball, paddle_p2);
+    if (contact_l.type != collision_type::None)
+    {
+        collide_with_paddle(ball, contact_l);
+        return;
+    }
+
+    contact_l = check_ball_wall_collision(ball, screen_height, screen_width);
+    if (contact_l.type != collision_type::None)
+    {
+        collide_with_wall(contact_l,ball,screen_width, screen_height);
+        return;
     }
 }
 
@@ -242,10 +255,12 @@ SDL_Rect init_player(int paddle_x_pos, int paddle_y_pos, int paddle_height, int 
 
     return player;
 }
+
 void draw_player(SDL_Renderer *renderer, SDL_Rect *player) {
     SDL_SetRenderDrawColor(renderer, 0xFF, 0xFF, 0xFF, 0xFF);
     SDL_RenderFillRect(renderer, player);
 }
+
 void draw_ball(SDL_Renderer *renderer, const Ball &ball) {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
@@ -331,8 +346,6 @@ int main() {
 
     SDL_Rect p1 = init_player(player_1_start_x_pos, player_start_y_pos - (paddle_height / 2), paddle_height, paddle_width);
     SDL_Rect p2 = init_player(player_2_start_x_pos, player_start_y_pos - (paddle_height / 2), paddle_height, paddle_width);
-
-
 
     const float PADDLE_SPEED = 500.0f;
     float BALL_SPEED = PADDLE_SPEED / 6.0f;
