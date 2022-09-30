@@ -1,4 +1,4 @@
-/snap/clion/204/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/snap/clion/204/bin/ninja/linux/ninja -G Ninja -S /home/neyko641/Projects/Pong/Pong -B /home/neyko641/Projects/Pong/Pong/cmake-build-debug
+/opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S /home/i-use-gentoo-btw/Documents/Random/Pong -B /home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug
 -- Configuring done
 -- Generating done
--- Build files have been written to: /home/neyko641/Projects/Pong/Pong/cmake-build-debug
+-- Build files have been written to: /home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug

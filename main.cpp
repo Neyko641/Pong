@@ -4,16 +4,17 @@
 #include <SDL2/SDL_video.h>
 #include <SDL2/SDL_events.h>
 #include <algorithm>
-#include <SDL2/SDL_ttf.h>
-#include <stdlib.h>
-#include <time.h>
-#include <stdio.h>
+//#include <SDL2/SDL_ttf.h>
+#include <cstdlib>
+#include <ctime>
+#include <cstdio>
+
 struct Window {
-    int width;
-    int height;
-    SDL_Renderer *renderer;
-    SDL_Window *win;
-    TTF_Font *score_font;
+    int width{};
+    int height{};
+    SDL_Renderer* renderer = nullptr;
+    SDL_Window* win = nullptr;
+//    TTF_Font* score_font = nullptr;
 };
 
 struct Inputs {
@@ -60,7 +61,7 @@ bool init_sdl_win (SDL_Renderer *&renderer, SDL_Window *&win, int screen_width, 
     render_flags = SDL_RENDERER_ACCELERATED;
     win_flags = 0;
     if (SDL_Init(SDL_INIT_EVERYTHING) < 0) {
-        printf("Couldn't init SDL", SDL_GetError());
+        printf("Couldn't init SDL: %s", SDL_GetError());
         return false;
     }
 /*
@@ -105,14 +106,14 @@ Contact check_ball_wall_collision (Ball const &ball, int screen_height, int scre
     Contact contact{};
     if(ball_left < 0.0f) {
         contact.type = collision_type::Left;
-    } else if (ball_right > screen_width) {
+    } else if (ball_right > static_cast<float>(screen_width)) {
         contact.type = collision_type::Right;
     } else if (ball_top < 0.0f) {
         contact.type = collision_type::Top;
         contact.penetration = -ball_top;
-    } else if(ball_bottom > screen_height) {
+    } else if(ball_bottom > static_cast<float>(screen_height)) {
         contact.type = collision_type::Bottom;
-        contact.penetration = screen_height - ball_bottom;
+        contact.penetration = static_cast<float>(screen_height) - ball_bottom;
     }
     return contact;
 }
@@ -123,10 +124,10 @@ Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
     float ball_top = ball.pos.y;
     float ball_bottom = ball.pos.y + (ball.radius * 3);
 
-    float paddle_left = paddle.x;
-    float paddle_right = paddle.x + paddle.w;
-    float paddle_top = paddle.y;
-    float paddle_bottom = paddle.y + paddle.h;
+    auto paddle_left = static_cast<float>(paddle.x);
+    auto paddle_right = static_cast<float>(paddle.x) + static_cast<float>(paddle.w);
+    auto paddle_top = static_cast<float>(paddle.y);
+    float paddle_bottom = static_cast<float>(paddle.y) + static_cast<float>(paddle.h);
 
     Contact contact{};
 
@@ -142,8 +143,8 @@ Contact check_paddle_collision (Ball const &ball, SDL_Rect const& paddle) {
     if(ball_bottom <= paddle_top) {
         return contact;
     }
-    float paddle_range_upper = paddle_bottom - (2.0f * paddle.h / 3.0f);
-    float paddle_range_middle = paddle_bottom - (paddle.h / 3.0f);
+    float paddle_range_upper = paddle_bottom - (2.0f * static_cast<float>(paddle.h) / 3.0f);
+    float paddle_range_middle = paddle_bottom - (static_cast<float>(paddle.h) / 3.0f);
 
     if(ball.dir.x < 0) {
         contact.penetration = paddle_right - ball_left;
@@ -167,18 +168,23 @@ void collide_with_wall (Contact const &contact, Ball &ball, int screen_width, in
         ball.pos.y = contact.penetration;
         ball.dir.x = -ball.dir.x;
     }  else if (contact.type == collision_type::Left) {
-        ball.pos.x = screen_width / 2.0F;
-        ball.pos.y = screen_height / 2.0F;
+        ball.pos.x = static_cast<float>(screen_width) / 2.0F;
+        ball.pos.y = static_cast<float>(screen_height) / 2.0F;
         ball.dir.x = ball.speed;
-        ball.dir.y = 0.75 * ball.speed;
+        ball.dir.y = 0.75f * ball.speed;
     } else if(contact.type == collision_type::Right) {
-        ball.pos.x = screen_width / 2.0F;
-        ball.pos.y = screen_height / 2.0F;
+        ball.pos.x = static_cast<float>(screen_width) / 2.0F;
+        ball.pos.y = static_cast<float>(screen_height) / 2.0F;
         ball.dir.x = -ball.speed;
         ball.dir.y = 0.75f * ball.speed;
     }
 }
 void check_player_collision(Ball &ball, SDL_Rect &paddle_p1, SDL_Rect &paddle_p2, int screen_height, int screen_width) {
+    //Contact contact_l = check_paddle_collision(ball, paddle_p1);
+    //if (contact_l.type != collision_type::None)
+    //{
+//
+    //}
     if (Contact contact = check_paddle_collision(ball, paddle_p1);
             contact.type != collision_type::None) {
         collide_with_paddle(ball, contact);
@@ -201,7 +207,7 @@ void move_player(Inputs key_press, float *player_y_pos, float player_speed, floa
     char dir = 0;
     if (key_press.UP)   dir -= 1;
     if (key_press.DOWN) dir += 1;
-    *player_y_pos += dir * (player_speed * delta_time);
+    *player_y_pos += static_cast<float>(dir) * (player_speed * delta_time);
 }
 
 void handle_input(bool *is_running, Inputs *key_press) {
@@ -258,7 +264,7 @@ float clamp(float value, float min, float max) {
 }
 
 void player_wall_collision(int screen_height, float &player_y, int paddle_height) {
-    player_y = clamp(player_y, 0.0f, screen_height - paddle_height);
+    player_y = clamp(player_y, 0.0f, static_cast<float>(screen_height) - static_cast<float>(paddle_height));
 }
 
 
@@ -332,19 +338,19 @@ int main() {
     float BALL_SPEED = PADDLE_SPEED / 6.0f;
     Inputs keys = {};
 
-    float player_y = player_start_y_pos;
+    auto player_y = static_cast<float>(player_start_y_pos);
 
-    Ball ball = { {(float)ball_start_x_pos, (float)ball_start_y_pos}, {-1.0f, 0.0f}, 5.0f, BALL_SPEED };;
+    Ball ball = { {(float)ball_start_x_pos, (float)ball_start_y_pos}, {-1.0f, 0.0f}, 5.0f, BALL_SPEED };
 
     Uint32 now = SDL_GetTicks();
     srand(time(nullptr));
     while (is_running) {
         Uint32 last = now;
         now = SDL_GetTicks();
-        const float dt = (now - last) / 1000.0f;
+        const float dt = (static_cast<float>(now - last)) / 1000.0f;
 
         handle_input(&is_running, &keys);
-        p1.y = player_y;
+        p1.y = static_cast<int>(player_y);
         move_player(keys, &player_y, PADDLE_SPEED, dt);
         move_ball(ball, dt);
         check_player_collision(ball, p1, p2, application.height, application.width);
