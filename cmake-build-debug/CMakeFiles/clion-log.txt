@@ -1,4 +1,0 @@
-/opt/clion/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" -S /home/i-use-gentoo-btw/Documents/Random/Pong -B /home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug
--- Configuring done
--- Generating done
--- Build files have been written to: /home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug

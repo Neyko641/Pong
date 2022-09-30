@@ -1,3 +1,0 @@
-/home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug/CMakeFiles/Pong.dir
-/home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/i-use-gentoo-btw/Documents/Random/Pong/cmake-build-debug/CMakeFiles/rebuild_cache.dir
